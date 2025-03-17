@@ -68,73 +68,8 @@ async function handleEvent(event) {
             }
 
             const message = {
-                type: 'flex',
-                altText: 'PM2.5 AQI Information',
-                contents: {
-                    type: 'bubble',
-                    size: 'mega',
-                    body: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'text',
-                                text: 'แจ้งเตือน PM2.5',
-                                weight: 'bold',
-                                size: 'xl',
-                                align: 'center',
-                            },
-                            {
-                                type: 'box',
-                                layout: 'vertical',
-                                margin: 'md',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: `${pm25} AQI`,
-                                        size: 'xl',
-                                        color: color,
-                                        weight: 'bold',
-                                        align: 'center',
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `สถานที่: ${place}`,
-                                        size: 'lg',
-                                        color: '#1C1C1C',
-                                        weight: 'bold',
-                                    },
-                                    {
-                                        type: 'box',
-                                        layout: 'horizontal',
-                                        contents: [
-                                            {
-                                                type: 'text',
-                                                text: 'คำแนะนำ: ',
-                                                weight: 'bold',  // Bold the "คำแนะนำ" part
-                                                size: 'md',
-                                                color: '#1C1C1C',
-                                            },
-                                            {
-                                                type: 'text',
-                                                text: description,  // The rest of the description text
-                                                size: 'md',
-                                                color: '#1C1C1C',
-                                                wrap: true,  // Allow wrapping for long text
-                                            }
-                                        ],
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `อัพเดตเมื่อ: ${time}`,
-                                        size: 'xs',
-                                        color: '#757575',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                },
+                type: 'text',
+                text: `📢 แจ้งเตือน PM2.5\n\n🌍 สถานที่: ${place}\n🌫 ค่า PM2.5: ${pm25} AQI\n📌 ระดับคุณภาพอากาศ: ${description}\n🕒 อัพเดตเมื่อ: ${time}`
             };
             
             // Send the message using LINE bot
