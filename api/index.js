@@ -105,12 +105,6 @@ async function handleEvent(event) {
                                         weight: 'bold',
                                     },
                                     {
-                                        type: 'text',
-                                        text: `อัพเดตเมื่อ: ${time}`,
-                                        size: 'xs',
-                                        color: '#757575',
-                                    },
-                                    {
                                         type: 'box',
                                         layout: 'horizontal',
                                         contents: [
@@ -130,6 +124,12 @@ async function handleEvent(event) {
                                             }
                                         ],
                                     },
+                                    {
+                                        type: 'text',
+                                        text: `อัพเดตเมื่อ: ${time}`,
+                                        size: 'xs',
+                                        color: '#757575',
+                                    },
                                 ],
                             },
                         ],
@@ -138,11 +138,7 @@ async function handleEvent(event) {
             };
             
             // Send the message using LINE bot
-            await client.replyMessage(event.replyToken, message);
-            
-
-            // Send the message using LINE bot
-            await client.replyMessage(event.replyToken, message);
+        await client.replyMessage(event.replyToken, message);
         }
     }
     return Promise.resolve(null);
@@ -169,4 +165,8 @@ async function getPM25() {
         return { pm25: "N/A", place: "Unknown", time: "N/A" };
     }
 }
+app.listen(process.env.PORT || 3000, () => {
+    console.log('Server is running on port 3000');
+}
+);
 module.exports = app;
