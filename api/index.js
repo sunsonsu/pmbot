@@ -10,7 +10,7 @@ const config = {
     channelSecret: process.env.channelsecret              // Replace with your Channel Secret
 };
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.send('Hello World! API WORKS!');
 })
 
@@ -33,8 +33,8 @@ async function handleEvent(event) {
         const userMessage = event.message.text;
 
         // Check if the message contains "PM2.5"
-        const keywords = ["PM2.5", "pm2.5", "PM25", "pm25"];
-        if (keywords.some(keyword => userMessage.includes(keyword))) {
+        
+        if (userMessage.includes("pm2.5")) {
             const { pm25, place, time } = await getPM25();
 
             let color;
@@ -75,7 +75,12 @@ async function handleEvent(event) {
             // Send the message using LINE bot
         await client.replyMessage(event.replyToken, message);
         }else{
-            await client.replyMessage(event.replyToken, { type: 'text', text: 'ไม่พบข้อมูล PM2.5' });
+            message = {
+                type: 'text',
+                text: `You said: ${userMessage}`
+            }
+            await client.replyMessage(event.replyToken, message);
+
         }
     }
     return Promise.resolve(null);
@@ -102,5 +107,7 @@ async function getPM25() {
         return { pm25: "N/A", place: "Unknown", time: "N/A" };
     }
 }
-
+// app.listen(3000, () => {
+//     console.log('Server is running on port 3000');
+// });
 module.exports = app;
