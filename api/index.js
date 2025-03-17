@@ -74,6 +74,8 @@ async function handleEvent(event) {
             
             // Send the message using LINE bot
         await client.replyMessage(event.replyToken, message);
+        }else{
+            await client.replyMessage(event.replyToken, { type: 'text', text: 'ไม่พบข้อมูล PM2.5' });
         }
     }
     return Promise.resolve(null);
