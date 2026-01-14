@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -124,7 +125,17 @@ func handleLineWebhook(bot *linebot.Client, req events.APIGatewayProxyRequest) (
 
 func getAirVisualData(lat, lon string) (*WeatherResult, error) {
 	var apiKey string = os.Getenv("airapi")
-	var url string = fmt.Sprintf("http://api.airvisual.com/v2/city?city=San%%20Sai&state=Chiang%%20Mai&country=Thailand&key=%s", apiKey)
+	city := os.Getenv("city")
+	state := os.Getenv("state")
+	country := os.Getenv("country")
+
+	safeCity := url.QueryEscape(city)
+	safeState := url.QueryEscape(state)
+	safeCountry := url.QueryEscape(country)
+
+	// fetching when typing pm25 or pm2.5 for deafult city
+	var url string = fmt.Sprintf("http://api.airvisual.com/v2/city?city=%s&state=%s&country=%s&key=%s",
+		safeCity, safeState, safeCountry, apiKey)
 
 	if lat != "" && lon != "" {
 		url = fmt.Sprintf("http://api.airvisual.com/v2/nearest_city?lat=%s&lon=%s&key=%s", lat, lon, apiKey)
