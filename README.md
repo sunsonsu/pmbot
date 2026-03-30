@@ -1,28 +1,39 @@
-🌦️ LINE Weather & PM2.5 Bot (Go + AWS Lambda)
-A high-performance, serverless LINE Bot written in Go that provides real-time weather and air quality data from AirVisual API. It supports both on-demand requests via text/location and automated reports via scheduled events.
+🌦️ **LINE Weather & PM2.5 Bot** (__Go + AWS Lambda__)
+A high-performance, serverless LINE Bot built with Go that delivers real-time weather and air quality data from AirVisual API. It supports on-demand requests via text/location and automated daily reports via AWS EventBridge scheduling.
 
-Features
-On-Demand Weather: Triggered by text "pm25" or "pm2.5".
+__**Features**__
+- __On-Demand Weather:__ Text **"pm25"** or **"pm2.5"** triggers instant air quality data.
 
-Location-Based Search: Send a location pin to get the nearest city's air quality.
+- __Location-Based Search:__ Send a location pin to get the nearest city's air quality information.
 
-Automated Reports: Integration with AWS EventBridge (Cron) to push daily weather updates to a specific Group ID.
+- __Automated Reports:__ Scheduled daily weather updates via AWS EventBridge (Cron) to specific LINE Group IDs.
 
-Rich UI: Uses LINE Flex Messages with dynamic coloring based on AQI and Temperature levels.
+- __Rich UI:__ Leverages LINE Flex Messages with dynamic color coding based on AQI and Temperature levels.
 
-Performance: Built with Go for near-instant cold starts on AWS Lambda.
+- __High Performance:__ Built with Go to significantly reduce AWS Lambda costs and execution time compared to JavaScript.
+
+| Metric | JavaScript (Warm) | Go (Warm) | Advantage |
+|--------|-------------------|-----------|-----------|
+| **Execution Speed** | 611 ms | 250 ms | **2.4x faster** |
+| **Billed Duration** | 612 ms | 250 ms | **60% cost savings** |
+| **Max Memory** | 105 MB | 31 MB | **3x less memory** |
 
 ![Alt text](images/demo.png)
 
-🛠️ Tech Stack
-- Language: Go (Golang)
+🛠️ **Tech Stack**
+- __Language:__ **Go (Golang)**
 
-- Hosting: AWS Lambda (Amazon Linux 2023)
+- __Hosting:__ **AWS Lambda** (Amazon Linux 2023)
 
-- API: AirVisual (IQAir)
+- __API:__ **AirVisual (IQAir)**
 
-- SDK: LINE Messaging API SDK for Go v8
+- __SDK:__ **LINE Messaging API SDK for Go v8**
 
 ![Alt text](images/lambda.png)
-for deploying on aws lambda use the zipScript.sh to build and zip then upload to aws lambda.
-ps. thank you gemini for helping write this readme
+
+__Deployment to AWS Lambda:__
+1. Use **zipScript.sh** to build and compress the application
+2. Upload the zip file to AWS Lambda
+3. Set the Handler to **index.HandleRequest** in runtime settings
+
+Thanks to Gemini for assistance with this documentation.
