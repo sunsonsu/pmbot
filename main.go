@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -15,40 +14,9 @@ import (
 	"github.com/line/line-bot-sdk-go/v8/linebot"
 )
 
-type AirVisualDataResponse struct {
-	Data struct {
-		City    string `json:"city"`
-		Country string `json:"country"`
-		Current struct {
-			Pollution struct {
-				Aqius int    `json:"aqius"`
-				Ts    string `json:"ts"`
-			} `json:"pollution"`
-			Weather struct {
-				Tp int     `json:"tp"`
-				Hu int     `json:"hu"`
-				Ws float64 `json:"ws"`
-			} `json:"weather"`
-		} `json:"current"`
-	} `json:"data"`
-}
-
-type WeatherResult struct {
-	PM25      int
-	Temp      int
-	Humidity  int
-	WindSpeed float64
-	City      string
-	Country   string
-	Time      string
-}
-
-type StatusDetail struct {
-	Color, Text, Desc string
-}
-
 func main() {
 	lambda.Start(HandleRequest)
+
 }
 
 func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -62,7 +30,7 @@ func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (even
 	}
 
 	// other case is croJob from eventbridge
-	weatherData, err := getAirVisualData("", "")
+	weatherData, err := getAirVisualData("", "", http.DefaultClient)
 	if err != nil || weatherData == nil {
 		return events.APIGatewayProxyResponse{StatusCode: 500}, nil
 	}
@@ -94,7 +62,7 @@ func handleLineWebhook(bot *linebot.Client, req events.APIGatewayProxyRequest) (
 			case *linebot.TextMessage:
 				msgText := strings.ToLower(message.Text)
 				if msgText == "pm25" || msgText == "pm2.5" {
-					weatherData, _ := getAirVisualData("", "")
+					weatherData, _ := getAirVisualData("", "", http.DefaultClient)
 					if weatherData != nil {
 						flexMessage := createFlexMessage(weatherData)
 						altText := fmt.Sprintf("สภาพอากาศ %s - AQI %d - %d C", weatherData.City, weatherData.PM25, weatherData.Temp)
@@ -107,7 +75,7 @@ func handleLineWebhook(bot *linebot.Client, req events.APIGatewayProxyRequest) (
 			case *linebot.LocationMessage:
 				lat := fmt.Sprintf("%f", message.Latitude)
 				lon := fmt.Sprintf("%f", message.Longitude)
-				weatherData, _ := getAirVisualData(lat, lon)
+				weatherData, _ := getAirVisualData(lat, lon, http.DefaultClient)
 				if weatherData != nil {
 					flexMessage := createFlexMessage(weatherData)
 					altText := fmt.Sprintf("สภาพอากาศ %s - AQI %d - %d C", weatherData.City, weatherData.PM25, weatherData.Temp)
@@ -123,25 +91,20 @@ func handleLineWebhook(bot *linebot.Client, req events.APIGatewayProxyRequest) (
 	return events.APIGatewayProxyResponse{StatusCode: 200, Body: "Reply Message Success"}, nil
 }
 
-func getAirVisualData(lat, lon string) (*WeatherResult, error) {
-	var apiKey string = os.Getenv("airapi")
-	city := os.Getenv("city")
-	state := os.Getenv("state")
-	country := os.Getenv("country")
-
-	safeCity := url.QueryEscape(city)
-	safeState := url.QueryEscape(state)
-	safeCountry := url.QueryEscape(country)
-
-	// fetching when typing pm25 or pm2.5 for deafult city
-	var url string = fmt.Sprintf("http://api.airvisual.com/v2/city?city=%s&state=%s&country=%s&key=%s",
-		safeCity, safeState, safeCountry, apiKey)
-
-	if lat != "" && lon != "" {
-		url = fmt.Sprintf("http://api.airvisual.com/v2/nearest_city?lat=%s&lon=%s&key=%s", lat, lon, apiKey)
+func getAirVisualData(lat, lon string, client *http.Client) (*WeatherResult, error) {
+	baseURL := os.Getenv("AIRVISUAL_BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://api.airvisual.com"
 	}
 
-	resp, err := http.Get(url)
+	var apiKey string = os.Getenv("airapi")
+	var url string = fmt.Sprintf("%s/v2/city?city=San%%20Sai&state=Chiang%%20Mai&country=Thailand&key=%s", baseURL, apiKey)
+
+	if lat != "" && lon != "" {
+		url = fmt.Sprintf("%s/v2/nearest_city?lat=%s&lon=%s&key=%s", baseURL, lat, lon, apiKey)
+	}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +223,14 @@ func getAQIStatus(pm25 int) StatusDetail {
 	if pm25 <= 150 {
 		return StatusDetail{"#FF7043", "ไม่ดีต่อกลุ่มเสี่ยง", "ควรใส่หน้ากากและเลี่ยงการออกนอกอาคาร"}
 	}
-	return StatusDetail{"#EF5350", "ไม่ดี", "ควรใส่หน้ากากและหลีกเลี่ยงกิจกรรมกลางแจ้ง"}
+	if pm25 <= 200 {
+		return StatusDetail{"#c20000", "ไม่ดีต่อสุขภาพ", "ใส่หน้ากากและเปิดเครื่องฟอกอากาศ"}
+	}
+	if pm25 <= 300 {
+		return StatusDetail{"#910ac2", "อันตรายต่อสุขภาพ", "งดออกนอกอาคารและเปิดเครื่องฟอกอากาศ"}
+	} else {
+		return StatusDetail{"#52291f", "อันตรายรุนแรง", "งดออกนอกอาคารและเปิดเครื่องฟอกอากาศ"}
+	}
 }
 
 func getTempColor(temp int) string {
