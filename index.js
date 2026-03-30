@@ -79,14 +79,17 @@ async function runCronJob() {
 
 // --- Lambda Handler ---
 const httpHandler = serverless(app);
-module.exports.handler = async (event, context) => {
+async function HandleRequest(event, context) {
     // ถ้าไม่มี httpMethod แสดงว่ามาจาก EventBridge
     if (!event.httpMethod && !event.requestContext) {
         await runCronJob();
         return { statusCode: 200, body: "OK" };
     }
     return await httpHandler(event, context);
-};
+}
+
+module.exports.HandleRequest = HandleRequest;
+module.exports.handler = HandleRequest;
 
 app.post('/api', line.middleware(config), async (req, res) => {
     await Promise.all(req.body.events.map(handleEvent));
