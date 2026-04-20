@@ -203,7 +203,7 @@ func createFlexMessage(data *WeatherResult) linebot.FlexContainer {
 			"type": "box",
 			"layout": "vertical",
 			"contents": [
-				{ "type": "text", "text": "ข้อมูลเมื่อ: %s", "size": "xxs", "color": "#999999", "align": "center" }
+				{ "type": "text", "text": "ข้อมูลเมื่อ: %s", "size": "xxs", "color": "#999999", "align": "center" },
 			{
 					"type": "button",
 					"action": {
@@ -212,7 +212,7 @@ func createFlexMessage(data *WeatherResult) linebot.FlexContainer {
 						"uri": "line://nv/recommendToFriends"
 					},
 					"style": "primary",
-					"color": "#06C755",
+					"color": "#5e5f5f",
 					"height": "sm"
 				}
 				],
