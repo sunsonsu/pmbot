@@ -37,8 +37,17 @@ func HandleRequest(ctx context.Context, req events.APIGatewayProxyRequest) (even
 
 	flexMessage := createFlexMessage(weatherData)
 	altText := fmt.Sprintf("สภาพอากาศ %s - AQI %d - %d C", weatherData.City, weatherData.PM25, weatherData.Temp)
+	targetID := os.Getenv("groupid")
 
-	_, err = bot.PushMessage(os.Getenv("groupid"), linebot.NewFlexMessage(altText, flexMessage)).Do()
+	path := strings.ToLower(req.Path)
+	if path == "" {
+		path = strings.ToLower(req.RequestContext.Path)
+	}
+	if strings.Contains(path, "/dev") {
+		targetID = os.Getenv("userid")
+	}
+
+	_, err = bot.PushMessage(targetID, linebot.NewFlexMessage(altText, flexMessage)).Do()
 	if err != nil {
 		fmt.Println("Push Message Error:", err)
 	}
