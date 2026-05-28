@@ -214,7 +214,14 @@ func createFlexMessage(data *WeatherResult) linebot.FlexContainer {
 							"paddingAll":      "15px",
 							"margin":          "sm",
 							"contents": []any{
-								textNode(aqi.Text, "#ffffff", "sm", "bold", ""),
+								map[string]any{
+									"type":   "text",
+									"text":   aqi.Text,
+									"size":   "sm",
+									"weight": "bold",
+									"color":  "#ffffff",
+									"align":  "center",
+								},
 								map[string]any{
 									"type":   "text",
 									"text":   fmt.Sprintf("%d", data.PM25),
@@ -222,6 +229,14 @@ func createFlexMessage(data *WeatherResult) linebot.FlexContainer {
 									"weight": "bold",
 									"color":  "#ffffff",
 									"align":  "center",
+								},
+								map[string]any{
+									"type":   "text",
+									"text":   "AQI",
+									"size":   "xs",
+									"color":  "#ffffff",
+									"align":  "center",
+									"margin": "xs",
 								},
 							},
 						},
