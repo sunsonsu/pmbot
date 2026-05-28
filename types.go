@@ -10,9 +10,10 @@ type AirVisualDataResponse struct {
 				Ts    string `json:"ts"`
 			} `json:"pollution"`
 			Weather struct {
-				Tp int     `json:"tp"`
-				Hu int     `json:"hu"`
-				Ws float64 `json:"ws"`
+				Tp        int     `json:"tp"`
+				Hu        int     `json:"hu"`
+				Ws        float64 `json:"ws"`
+				HeatIndex int     `json:"heatIndex"`
 			} `json:"weather"`
 		} `json:"current"`
 	} `json:"data"`
@@ -23,6 +24,7 @@ type WeatherResult struct {
 	Temp      int
 	Humidity  int
 	WindSpeed float64
+	HeatIndex int
 	City      string
 	Country   string
 	Time      string
