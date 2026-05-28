@@ -3,7 +3,7 @@ name: Deploy PM25 JBot to Lambda
 on:
   push:
     branches:
-      - go-version
+      - main
 
 jobs:
   deploy:
@@ -40,5 +40,5 @@ jobs:
       - name: Update Lambda Code
         run: |
           aws lambda update-function-code \
-            --function-name pm25-jbot \
+            --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME }} \
             --zip-file fileb://function.zip
